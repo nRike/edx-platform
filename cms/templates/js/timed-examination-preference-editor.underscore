@@ -2,6 +2,20 @@
     <h3 class="modal-section-title"><%- gettext('Set as a Special Exam') %></h3>
     <div class="modal-section-content has-actions">
         <div class="list-fields list-input exam-types" role="group" aria-label="<%- gettext('Exam Types') %>">
+            <%
+                var disallow_changing_proctored_exam_type = (
+                    xblockInfo.get('released_to_students') && xblockInfo.get('was_ever_proctored_exam')
+                );
+                var disable_proctored_exam_option = (
+                    disallow_changing_proctored_exam_type && !xblockInfo.get('is_proctored_exam')
+                );
+                var disable_onboarding_exam_option = (
+                    disallow_changing_proctored_exam_type && !xblockInfo.get('is_onboarding_exam')
+                );
+                var disable_practice_exam_option = (
+                    disallow_changing_proctored_exam_type && !xblockInfo.get('is_practice_exam')
+                );
+            %>
             <label class="label no-descriptive-text">
                 <input type="radio" name="exam_type" class="input input-radio no_special_exam" checked="checked"/>
                 <%- gettext('None') %>
@@ -15,7 +29,11 @@
             <% if (enable_proctored_exam) { %>
                 <label class="label">
                     <input type="radio" name="exam_type" class="input input-radio proctored_exam"
-                        aria-describedby="proctored-exam-description" />
+                        aria-describedby="proctored-exam-description"
+                        <% if (disable_proctored_exam_option) { %>
+                            disabled
+                        <% } %>
+                    />
                     <%- gettext('Proctored') %>
                 </label>
                 <p class='field-message' id='proctored-exam-description'> <%- gettext('Proctored exams are timed and they record video of each learner taking the exam. The videos are then reviewed to ensure that learners follow all examination rules.') %> </p>
@@ -24,14 +42,22 @@
                 <% if (supports_onboarding) { %>
                     <label class="label">
                         <input type="radio" name="exam_type" class="input input-radio onboarding_exam"
-                            aria-describedby="onboarding-exam-description"/>
+                        aria-describedby="onboarding-exam-description"
+                        <% if (disable_onboarding_exam_option) { %>
+                            disabled
+                        <% } %>
+                    />
                         <%- gettext('Onboarding') %>
                     </label>
                     <p class='field-message' id='onboarding-exam-description'> <%- gettext("Use Onboarding to introduce learners to proctoring, verify their identity, and create an onboarding profile. Learners must complete the onboarding profile step prior to taking a proctored exam. Profile reviews take 2+ business days.") %> </p>
                 <% } else { %>
                     <label class="label">
                         <input type="radio" name="exam_type" class="input input-radio practice_exam"
-                            aria-describedby="practice-exam-description"/>
+                            aria-describedby="practice-exam-description"
+                            <% if (disable_practice_exam_option) { %>
+                                disabled
+                            <% } %>
+                    />
                         <%- gettext('Practice Proctored') %>
                     </label>
                     <p class='field-message' id='practice-exam-description'> <%- gettext("Use a practice proctored exam to introduce learners to the proctoring tools and processes. Results of a practice exam do not affect a learner's grade.") %> </p>
